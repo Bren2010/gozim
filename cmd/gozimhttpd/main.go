@@ -128,19 +128,23 @@ func main() {
 	http.Handle("/static/", fileServer)
 
 	// crompress wiki pages
-	http.HandleFunc("/zim/", makeGzipHandler(zimHandler))
-	z, err := zim.NewReader(*zimPath)
+	http.HandleFunc("/zim/", zimHandler)
+	f, err := os.Open(*zimPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	z, err := zim.NewReader(f)
 	Z = z
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// tpl
-	http.HandleFunc("/search/", makeGzipHandler(searchHandler))
-	http.HandleFunc("/browse/", makeGzipHandler(browseHandler))
-	http.HandleFunc("/about/", makeGzipHandler(aboutHandler))
+	http.HandleFunc("/search/", searchHandler)
+	http.HandleFunc("/browse/", browseHandler)
+	http.HandleFunc("/about/", aboutHandler)
 	http.HandleFunc("/robots.txt", robotHandler)
-	http.HandleFunc("/", makeGzipHandler(homeHandler))
+	http.HandleFunc("/", homeHandler)
 
 	// the need for a cache is absolute
 	// a lot of the same urls will be called repeatedly, css, js ...

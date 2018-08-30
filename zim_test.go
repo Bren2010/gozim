@@ -1,15 +1,20 @@
 package zim
 
 import (
-	"log"
 	"testing"
+
+	"log"
+	"os"
 )
 
 var Z *ZimReader
 
 func init() {
-	var err error
-	Z, err = NewReader("test.zim")
+	f, err := os.Open("test.zim")
+	if err != nil {
+		log.Panicf("Can't open %v", err)
+	}
+	Z, err = NewReader(f)
 	if err != nil {
 		log.Panicf("Can't read %v", err)
 	}
@@ -26,14 +31,6 @@ func TestMime(t *testing.T) {
 	if len(Z.MimeTypes()) == 0 {
 		t.Errorf("No mime types found")
 	}
-}
-
-func TestDisplayInfost(t *testing.T) {
-	info := Z.String()
-	if len(info) < 0 {
-		t.Errorf("Can't read infos")
-	}
-	t.Log(info)
 }
 
 func TestURLAtIdx(t *testing.T) {

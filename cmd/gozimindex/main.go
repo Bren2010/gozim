@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/Bren2010/gozim"
 	"github.com/PuerkitoBio/goquery"
@@ -54,7 +55,11 @@ func main() {
 		log.Fatal("provide a zim file path")
 	}
 
-	z, err := zim.NewReader(*path)
+	f, err := os.Open(*path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	z, err := zim.NewReader(f)
 	if err != nil {
 		log.Fatal(err)
 	}

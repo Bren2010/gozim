@@ -3,9 +3,7 @@ package zim
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
-	"os"
 	"strings"
 )
 
@@ -15,7 +13,7 @@ const (
 
 // ZimReader keep tracks of everything related to ZIM reading
 type ZimReader struct {
-	f             *os.File
+	f             io.ReaderAt
 	ArticleCount  uint32
 	clusterCount  uint32
 	urlPtrPos     uint64
@@ -28,15 +26,9 @@ type ZimReader struct {
 }
 
 // create a new zim reader
-func NewReader(path string) (*ZimReader, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
+func NewReader(f io.ReaderAt) (*ZimReader, error) {
 	z := ZimReader{f: f, mainPage: 0xffffffff, layoutPage: 0xffffffff}
-
-	err = z.readFileHeaders()
-	return &z, err
+	return &z, z.readFileHeaders()
 }
 
 // Return an ordered list of mime types present in the ZIM file
@@ -175,20 +167,6 @@ func (z *ZimReader) GetPageNoIndex(url string) (*Article, error) {
 func (z *ZimReader) OffsetAtURLIdx(idx uint32) (uint64, error) {
 	offset := z.urlPtrPos + uint64(idx)*8
 	return readInt64(z.bytesRangeAt(offset, offset+8))
-}
-
-// Close & cleanup the zimreader
-func (z *ZimReader) Close() error {
-	return z.f.Close()
-}
-
-func (z *ZimReader) String() string {
-	fi, err := z.f.Stat()
-	if err != nil {
-		return "corrupted zim"
-	}
-	return fmt.Sprintf("Size: %d, ArticleCount: %d urlPtrPos: 0x%x titlePtrPos: 0x%x mimeListPos: 0x%x clusterPtrPos: 0x%x\nMimeTypes: %v",
-		fi.Size(), z.ArticleCount, z.urlPtrPos, z.titlePtrPos, z.mimeListPos, z.clusterPtrPos, z.MimeTypes())
 }
 
 // getBytesRangeAt returns bytes from start to end
