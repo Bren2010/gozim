@@ -10,8 +10,8 @@ import (
 	"runtime/pprof"
 	"strconv"
 
+	"github.com/Bren2010/gozim"
 	"github.com/GeertJohan/go.rice"
-	"github.com/akhenakh/gozim"
 	"github.com/blevesearch/bleve"
 	"github.com/hashicorp/golang-lru"
 
@@ -47,7 +47,6 @@ var (
 	port       = flag.Int("port", -1, "port to listen to, read HOST env if not specified, default to 8080 otherwise")
 	zimPath    = flag.String("path", "", "path for the zim file")
 	indexPath  = flag.String("index", "", "path for the index file")
-	mmap       = flag.Bool("mmap", false, "use mmap")
 	cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 	Z *zim.ZimReader
@@ -87,10 +86,6 @@ func main() {
 	flag.Parse()
 	if *zimPath == "" {
 		log.Fatal("provide a zim file path")
-	}
-
-	if *mmap {
-		log.Println("Using mmap")
 	}
 
 	if *cpuprofile != "" {
@@ -134,7 +129,7 @@ func main() {
 
 	// crompress wiki pages
 	http.HandleFunc("/zim/", makeGzipHandler(zimHandler))
-	z, err := zim.NewReader(*zimPath, *mmap)
+	z, err := zim.NewReader(*zimPath)
 	Z = z
 	if err != nil {
 		log.Fatal(err)

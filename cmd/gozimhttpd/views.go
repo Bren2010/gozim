@@ -7,7 +7,7 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/akhenakh/gozim"
+	"github.com/Bren2010/gozim"
 	"github.com/blevesearch/bleve"
 )
 

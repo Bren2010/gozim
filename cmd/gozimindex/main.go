@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Bren2010/gozim"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/akhenakh/gozim"
 	"github.com/blevesearch/bleve"
 	_ "github.com/blevesearch/bleve/analysis/lang/en"
 	_ "github.com/blevesearch/bleve/analysis/lang/fr"
@@ -54,7 +54,7 @@ func main() {
 		log.Fatal("provide a zim file path")
 	}
 
-	z, err := zim.NewReader(*path, false)
+	z, err := zim.NewReader(*path)
 	if err != nil {
 		log.Fatal(err)
 	}
